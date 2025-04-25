@@ -70,7 +70,7 @@ The sender can be invoked with:
 
 `python3 application.py -c  -f Photo.jpg -i <ip_address_of_the_server> -p <server_port>`
 
-The output at the client side should look like this:
+The output at the client side will look like this:
 
 ```console
 Connection Establishment Phase:
@@ -309,7 +309,7 @@ Here are example outputs from both the client and server for a test case with th
 
 ```console
 
-h1$ python3 application.py -c  -f Photo.jpg -i 10.0.1.2 -p 8080
+h1$ python3 application.py -c  -f Photo.jpg -i 10.0.1.2 -p 8080 -w 5
 
 Connection Establishment Phase:
 
@@ -404,7 +404,7 @@ Below are example outputs from both the client and server for the netem case wit
 
 ```console
 
-h1$ `python3 application.py -c  -f Photo.jpg -i 10.0.1.2 -p 8080`
+h1$ `python3 application.py -c  -f Photo.jpg -i 10.0.1.2 -p 8080 -w 5`
 
 Connection Establishment Phase:
 
