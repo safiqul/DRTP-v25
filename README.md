@@ -10,7 +10,7 @@ We have already covered the required concepts in our lectures, labs, and mandato
 
 You will be writing the sending and receiving transport-level code for implementing a simple reliable data transfer protocol. You will use your simple transport protocol - DATA2410 Reliable Transport Protocol (DRTP) that provides reliable data delivery on top of UDP. Your protocol will ensure that data is reliably delivered in-order without missing data or duplicates.
 
-You will write code that will reliably transfer file between two nodes in the network. You MUST implement one program: A file transfer application which will run as a server or a client.
+You will write code that will reliably transfer file between two nodes in the network. You MUST implement one program: A file transfer application which will run as a server (receiver) or a client (sender).
 
 > NOTE You must use UDP as the transport protocol and add reliability on top of that. You are not supposed to use any other transport protocol which already provides reliability (e.g., TCP). You must construct the packets and acknowledgements. You must establish the connection and gracefully close when the transfer is finished.
 
@@ -66,9 +66,9 @@ A client reads a file from the computer and sends it over DRTP/UDP. The file nam
 
 It is possible to transfer two source files at the same time. In this assignment,  we'll only allow one transfer. 
 
-The sender can be invoked with:
+The client/sender can be invoked with:
 
-`python3 application.py -c  -f Photo.jpg -i <ip_address_of_the_server> -p <server_port>`
+`python3 application.py -c  -f Photo.jpg -i <ip_address_of_the_server> -p <server_port> -w <window_size>`
 
 The output at the client side will look like this:
 
@@ -127,7 +127,7 @@ Table below lists all the available options that you can use to invoke the serve
 
 # Details
 
-A sender should read data in chunks of 992 bytes. For the sake of simplicity, assume 1 KB = 1000 Bytes, and 1 MB = 1000 KB. For each chunk (application data), a sender adds a header before it sends the data over UDP. The header length is 8 bytes and application data is 92 bytes.  A sender therefore sends 1000 bytes of data to a receiver, including the custom DRTP header. The header contains a sequence number (packet sequence number), an acknowledgment number (packet acknowledgment number), flags (only 4 bits are used for connection establishment, teardown, and acknowledgment packets), and a receiver window (for flow control). The DRTP header looks like this:
+A sender should read data in chunks of 992 bytes. For the sake of simplicity, assume 1 KB = 1000 Bytes, and 1 MB = 1000 KB. For each chunk (application data), a sender adds a header before it sends the data over UDP. The header length is 8 bytes and application data is 992 bytes.  A sender therefore sends 1000 bytes of data to a receiver, including the custom DRTP header. The header contains a sequence number (packet sequence number), an acknowledgment number (packet acknowledgment number), flags (only 4 bits are used for connection establishment, teardown, and acknowledgment packets), and a receiver window (for flow control). The DRTP header looks like this:
 
 
 ```
@@ -139,7 +139,7 @@ A sender should read data in chunks of 992 bytes. For the sake of simplicity, as
 
 
 ```
-> protocol "Sequence Number:16 bits, Acknowledgment Number: 16 bits, Flags: 16 bits Receiver Window: 16 bits".
+> protocol "Sequence Number:16 bits, Acknowledgment Number: 16 bits, Flags: 16 bits, Receiver Window: 16 bits".
 
 
 Together with the header, your application data that you will send over DRTP/UDP:
@@ -172,16 +172,22 @@ Format of the flag fields:
 > Note we're not going to use the R flag in our assignment, we'll set the value to 0
 
 
-### Connection establishment and tear down
+### Connection establishment
 
-A sender initiates a three-way handshake with the receiver (similar to TCP) to establish a reliable connection. A sender first sends an empty packet with the syn flag ON. A server then responds with packet with SYN and ACK flags set, and a reciever window value of 15 and establishes the connection. Upon receiving syn-ack packet, a sender sends ack to the server and adjusts its sending window based on the receiver window value. 
+A sender initiates a three-way handshake with the receiver (similar to TCP) to establish a reliable connection. A sender first sends an empty packet with the `SYN` flag ON. A server then responds with packet with `SYN` and `ACK` flags set, and a reciever window value of 15 and establishes the connection. Upon receiving syn-ack packet, a sender sends ack to the server and adjusts its sending window based on the receiver window value. 
 
+> **NOTE** A sender should not exceed the receiver’s window. The sending window should be the minimum of the sender’s window (specified by the `-w` flag) and the receiver’s window (sent by the server in the syn-ack packet).
+
+
+### Connection tear down
+
+A two-way handshake is used to close the connection. A sender initiates connection teardown with the receiver by sending a packet with the `FIN` flag ON. This signals that the sender has no more data to send. The receiver responds with a packet that has both `FIN` and `ACK` flags set, acknowledging the sender’s request and indicating that it is also ready to close the connection. The connection is then terminated.
 
 ### Reliability function
 
 You will implement Go-Back-N (GBN()) reliability function. 
 
-Go-Back-N (GBN()): sender implements the Go-Back-N strategy using a fixed window size of 3 (default case if not changed by `-w` flag) packets to transfer data. The sequence numbers represent packets, i.e. packet 1 is numbered 1, packet 2 is numbered 2 and so on. If no ACK packet is received within a given timeout (choose a default value: 400ms, use socket.settimeout() function), all packets that have not previously been acknowledged are assumed to be lost and they are retransmitted. A receiver passes on data in order and if packets arrive at the receiver in the wrong order, this indicates packet loss or reordering in the network. The DRTP receiver should in such cases not acknowledge anyting and may discard these packets.
+Go-Back-N (GBN()): A sender implements the Go-Back-N strategy using a fixed window size of 3 (default case if not changed by `-w` flag) packets to transfer data. The sequence numbers represent packets, i.e. packet 1 is numbered 1, packet 2 is numbered 2 and so on. If no ACK packet is received within a given timeout (choose a default value: 400ms, use socket.settimeout() function), all packets that have not previously been acknowledged are assumed to be lost and they are retransmitted. A receiver passes on data in order and if packets arrive at the receiver in the wrong order, this indicates packet loss or reordering in the network. The DRTP receiver should in such cases not acknowledge anyting and may discard these packets.
 
 See textbook and lecture slides for more details.
 
@@ -404,7 +410,7 @@ Below are example outputs from both the client and server for the netem case wit
 
 ```console
 
-h1$ `python3 application.py -c  -f Photo.jpg -i 10.0.1.2 -p 8080 -w 5`
+h1$ python3 application.py -c  -f Photo.jpg -i 10.0.1.2 -p 8080 -w 5
 
 Connection Establishment Phase:
 
