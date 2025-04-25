@@ -1,6 +1,6 @@
 # Individual Assignment: DATA2410 Reliable Transport Protocol (DRTP) 
 
-This individual assignment will count towards your final grade (40%). Your submission will be marked with respect to how well you have fulfilled the requirements listed below. You must pass all the mandatory assigments in order to take part in this exam.
+This individual assignment will count towards your final grade (40%). Your submission will be marked with respect to how well you have fulfilled the requirements listed below. You must pass all the mandatory assignments in order to take part in this exam.
 
 # Prerequisites
 
@@ -73,7 +73,7 @@ The sender can be invoked with:
 The output at the client side should look like this:
 
 ```console
-Connection Establisht Phase:
+Connection Establishment Phase:
 
 SYN packet is sent
 SYN-ACK packet is received
@@ -118,7 +118,7 @@ Table below lists all the available options that you can use to invoke the serve
 | `-s`         |  `--server`   |   X         | (boolean)   | enable the server mode |
 | `-c`         |  `--client`   |   X         | (boolean)   | enable the client mode |
 | `-i`         | `--ip`    | **ip address**  | string  | allows to bind the `ip address` at the server side. The client will use this flag to select server's ip for the connection - use a default value if it's not provided. It must be in the dotted decimal notation format, e.g. 10.0.1.2 |
-|`-p`          | `--port`    | **port numr**  | integer  |allows to use select `port number` on which the server should listen and at the client side, it allows to select the server's port number; the port must be an integer and in the range `[1024, 65535]`, default: 8088|
+|`-p`          | `--port`    | **port number**  | integer  |allows to use select `port number` on which the server should listen and at the client side, it allows to select the server's port number; the port must be an integer and in the range `[1024, 65535]`, default: 8088|
 | `-f`  |`--file`      |  x   |  string |allows you to choose the jpg file| 
 | `-w`  |`--window`    |  x   |  int |sliding window size, default: 3| 
 | `-d`  |`--discard`      |  x   |  int |a custom test case to skip a seq to check for retransmission. If you pass `-d 11` on the server side, your server will discard packet with seq number 11 only for once. Make sure you change the value to an infinitely large number after your first check in order to avoid skipping seq=11 all the time.| 
@@ -174,7 +174,7 @@ Format of the flag fields:
 
 ### Connection establishment and tear down
 
-A sender initiates a three-way handshake with the receiver (similar to TCP) to establish a reliable connection. A sender first sends and empty packet with the syn flag ON. A server then responds with packet with SYN and ACK flags set, and a reciever window value of 15 and establishes the connection. Upon receiving syn-ack packet, a sender sends ack to the server and adjusts its sending window based on the receiver window value. 
+A sender initiates a three-way handshake with the receiver (similar to TCP) to establish a reliable connection. A sender first sends an empty packet with the syn flag ON. A server then responds with packet with SYN and ACK flags set, and a reciever window value of 15 and establishes the connection. Upon receiving syn-ack packet, a sender sends ack to the server and adjusts its sending window based on the receiver window value. 
 
 
 ### Reliability function
@@ -290,7 +290,7 @@ Here's an example scenario where you attempt to run a client while the server is
 h1$ python3 application.py -c  -f Photo.jpg -i 10.0.1.2 -p 8080
 
 
-Connection Establisht Phase:
+Connection Establishment Phase:
 
 SYN packet is sent
 
@@ -311,7 +311,7 @@ Here are example outputs from both the client and server for a test case with th
 
 h1$ python3 application.py -c  -f Photo.jpg -i 10.0.1.2 -p 8080
 
-Connection Establisht Phase:
+Connection Establishment Phase:
 
 SYN packet is sent
 SYN-ACK packet is received
@@ -406,7 +406,7 @@ Below are example outputs from both the client and server for the netem case wit
 
 h1$ `python3 application.py -c  -f Photo.jpg -i 10.0.1.2 -p 8080`
 
-Connection Establisht Phase:
+Connection Establishment Phase:
 
 SYN packet is sent
 SYN-ACK packet is received
@@ -467,7 +467,7 @@ ACK packet is received
 Connection established
 14:22:57.577169 -- packet 1 is received
 14:22:57.577228 -- sending ack for the received 1 
-14:22:57.577325 -- out-of-ourder packet 3 is received
+14:22:57.577325 -- out-of-order packet 3 is received
 14:22:57.577657 -- out-of-order packet 4 is received
 14:22:57.577801 -- out-of-order packet 5 is received
 14:22:57.678966 -- out-of-order packet 6 is received
