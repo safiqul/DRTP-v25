@@ -158,7 +158,7 @@ Together with the header, your application data that you will send over DRTP/UDP
 
 ```
 
-If a DRTP packet contains no data, then it is only an acknowledgment packet ("ACK"). It confirms having received all packets up to the specified sequence number. An acknowledgement packet (only 6 bytes) is sent by the receiver with the acknowledgment number and set the ACK flag bit in the Flags field. 
+If a DRTP packet contains no data, then it is only an acknowledgment packet ("ACK"). It confirms having received all packets up to the specified sequence number. An acknowledgement packet (only 8 bytes) is sent by the receiver with the acknowledgment number and set the ACK flag bit in the Flags field. 
 
 Format of the flag fields:
 ```
